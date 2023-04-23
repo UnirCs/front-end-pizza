@@ -1,0 +1,6 @@
+.checkout-report {
+    display: flex;
+    margin: 0 auto;
+    flex-direction: column;
+    font-size: 22px;
+}

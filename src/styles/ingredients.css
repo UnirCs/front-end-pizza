@@ -1,0 +1,9 @@
+.ingredients {
+    position: absolute;
+    margin-top: -100px;
+    z-index: 2;
+  }
+  
+  .base {
+    z-index: 1;
+  }
