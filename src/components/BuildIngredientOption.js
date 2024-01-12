@@ -43,19 +43,19 @@ export const BuildIngredientOption = ({ ingredient }) => {
           {ingredient.vegan && (
             <div>
               <span>
-                <img className="logo" src={Vegan}></img>
+                <img className="logo" src={Vegan} alt="Vegan logo"></img>
               </span>
             </div>
           )}
           {ingredient.spicy && (
             <div>
               <span>
-                <img className="logo" src={Spicy}></img>
+                <img className="logo" src={Spicy} alt="Spicy logo"></img>
               </span>
             </div>
           )}
           <div className="popup" onClick={showDescription}>
-            <img className="logo" src={Question}></img>
+            <img className="logo" src={Question} alt="Question logo"></img>
             <span className="popuptext" id={ingredient.internalName + "-popup"}>
               {ingredient.description}
             </span>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import Base from "../assets/PizzaBase.png";
 import { useNavigate } from "react-router-dom";
 import { BuildIngredientImage } from "../components/BuildIngredientImage";
@@ -76,7 +76,6 @@ export const BuildView = () => {
       <div className="center">
         <button
           className="button-53"
-          role="button"
           onClick={() => navigate("/checkout")}
         >
           Ir a Checkout

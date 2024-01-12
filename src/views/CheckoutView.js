@@ -70,14 +70,12 @@ export const CheckoutView = () => {
         <div className="buttons">
           <button
             className="button-53"
-            role="button"
             onClick={() => setSuccess(true)}
           >
             Confirmar
           </button>
           <button
             className="button-53"
-            role="button"
             onClick={() => navigate("/")}
           >
             Volver
@@ -85,7 +83,7 @@ export const CheckoutView = () => {
         </div>
         {success && (
           <div>
-            <img src={PedidoOK} height="400px"></img>
+            <img src={PedidoOK} height="400px" alt="PedidoOK"></img>
             <p>Pedido confirmado!</p>
           </div>
         )}
