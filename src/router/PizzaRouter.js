@@ -1,7 +1,9 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { CheckoutView } from "../views/CheckoutView";
-import { BuildView } from "../views/BuildView";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {CheckoutView} from "../views/CheckoutView";
+import {BuildView} from "../views/BuildView";
+import {PaymentSucceededView} from "../views/PaymentSucceededView";
+import {PaymentFailedView} from "../views/PaymentFailedView";
 
 /**
  * PizzaRouter
@@ -10,12 +12,14 @@ import { BuildView } from "../views/BuildView";
  * @returns
  */
 export const PizzaRouter = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/checkout" element={<CheckoutView />} />
-        <Route path="/" element={<BuildView />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/checkout" element={<CheckoutView/>}/>
+                <Route path="/payment-succeeded" element={<PaymentSucceededView/>}/>
+                <Route path="/payment-failed" element={<PaymentFailedView/>}/>
+                <Route path="/" element={<BuildView/>}/>
+            </Routes>
+        </BrowserRouter>
+    );
 };

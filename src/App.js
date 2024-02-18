@@ -43,7 +43,7 @@ function App() {
    * del back-end en el primer renderizado.
    */
   useEffect(() => {
-    fetch(process.env.REACT_APP_GW_URL)
+    fetch(process.env.REACT_APP_GW_URL + "/ms-pizza-catalogue/ingredients")
       .then((res) => res.json())
       .then((res) => setIngredientsData(res));
   }, []);

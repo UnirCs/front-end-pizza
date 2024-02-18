@@ -1,7 +1,12 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { PizzaContext } from "../components/PizzaContext";
-import PedidoOK from "../assets/pedidoOk.png";
+import React, {useContext, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {PizzaContext} from "../components/PizzaContext";
+import {usePizzaValidation} from "../hooks/usePizzaValidation";
+import Select from '@mui/joy/Select';
+import Option from '@mui/joy/Option';
+import {loadStripe} from "@stripe/stripe-js";
+import {EmbeddedCheckout, EmbeddedCheckoutProvider} from "@stripe/react-stripe-js";
+import {useCheckout} from "../hooks/useCheckout";
 
 /**
  * CheckoutView
@@ -11,83 +16,99 @@ import PedidoOK from "../assets/pedidoOk.png";
  * @returns
  */
 export const CheckoutView = () => {
-  //Hook de navegacion para poder saltar a otras vistas.
-  const navigate = useNavigate();
 
-  //Hook de estado para poder re-renderizar en caso de pedido exitoso.
-  const [success, setSuccess] = useState(false);
+    // Carga de la clave publica de Stripe
+    const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+    const navigate = useNavigate();
+    const {activeIngredients} = useContext(PizzaContext);
 
-  //Hook de contexto para acceder a los ingredientes seleccionados por el usuario.
-  const { activeIngredients } = useContext(PizzaContext);
+    // Validacion de los ingredientes seleccionados
+    const [validated] = useState(usePizzaValidation(activeIngredients));
+    const [paymentPlatform, setPaymentPlatform] = useState("DELEGATED");
 
-  /**
-   * getPrice
-   * A partir de los ingredientes activos y seleccionados por el usuario
-   * obtiene el precio de la pizza en €.
-   * @returns precio de la pizza.
-   */
-  const getPrice = () => {
-    console.log(activeIngredients);
-    let price = 8.5;
-    Object.keys(activeIngredients).forEach((element) => {
-      price += activeIngredients[element].price;
-    });
-    return price;
-  };
+    // Hook de checkout
+    const {clientSecret, getPrice, checkout} = useCheckout(paymentPlatform, activeIngredients);
 
-  return (
-    <div className="checkbox">
-      <div className="checkout-report">
-        <h1>Pizza Personalizada</h1>
-        {Object.keys(activeIngredients).length > 0 && (
-          <>
-            <ul>
-              {
-                /**
-                 * Por cada uno de los elementos activos (seleccionados) del usuario
-                 * Se crea un ListItem con su nombre y precio
-                 */
-                Object.keys(activeIngredients).map((element) => {
-                  return (
-                    <li key={element + "-li"}>
-                      {activeIngredients[element].displayName +
-                        ". Coste: " +
-                        activeIngredients[element].price +
-                        " €."}
-                    </li>
-                  );
-                })
-              }
-              <li>Masa. Coste: 8.50 €</li>
-            </ul>
-            <p>
-              <b>Precio total: </b>
-              {getPrice() + " €."}
-            </p>
-          </>
-        )}
+    const handlePaymentPlatformChange = (event, newAlignment) => {
+        setPaymentPlatform(newAlignment);
+    };
 
-        <div className="buttons">
-          <button
-            className="button-53"
-            onClick={() => setSuccess(true)}
-          >
-            Confirmar
-          </button>
-          <button
-            className="button-53"
-            onClick={() => navigate("/")}
-          >
-            Volver
-          </button>
+    return (
+        <div className="checkbox">
+            <div className="checkout-report">
+                <h1>Pizza Personalizada</h1>
+                {Object.keys(activeIngredients).length > 0 && (
+                    <>
+                        <ul>
+                            {
+                                /**
+                                 * Por cada uno de los elementos activos (seleccionados) del usuario
+                                 * Se crea un ListItem con su nombre y precio
+                                 */
+                                Object.keys(activeIngredients).map((element) => {
+                                    return (
+                                        <li key={element + "-li"}>
+                                            {activeIngredients[element].displayName +
+                                                ". Coste: " +
+                                                activeIngredients[element].price +
+                                                " €."}
+                                        </li>
+                                    );
+                                })
+                            }
+                            <li>Masa. Coste: 8.50 €</li>
+                        </ul>
+                        <p>
+                            <b>Precio total: </b>
+                            {getPrice() + " €."}
+                        </p>
+                    </>
+                )}
+
+                <div>
+                    <p>Elige la plataforma de pago</p>
+                    <Select defaultValue="DELEGATED" onChange={handlePaymentPlatformChange}>
+                        <Option value="DELEGATED">Stripe - Checkout Delegado</Option>
+                        <Option value="EMBED">Stripe - Checkout Integrado</Option>
+                    </Select>
+                </div>
+                <br/>
+
+                {
+                    paymentPlatform === "DELEGATED" && (
+                        <div className="buttons">
+                            <button
+                                className="button-53"
+                                onClick={() => checkout()}
+                                disabled={!validated}
+                            >
+                                Confirmar
+                            </button>
+                            <button
+                                className="button-53"
+                                onClick={() => navigate("/")}
+                            >
+                                Volver
+                            </button>
+                        </div>
+                    )
+                }
+
+                {
+                    paymentPlatform === "EMBED" && (
+                        <div id="checkout">
+                            {clientSecret && (
+                                <EmbeddedCheckoutProvider
+                                    stripe={stripePromise}
+                                    options={{clientSecret}}
+                                >
+                                    <EmbeddedCheckout/>
+                                </EmbeddedCheckoutProvider>
+                            )}
+                        </div>
+                    )
+                }
+            </div>
         </div>
-        {success && (
-          <div>
-            <img src={PedidoOK} height="400px" alt="PedidoOK"></img>
-            <p>Pedido confirmado!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    );
 };
