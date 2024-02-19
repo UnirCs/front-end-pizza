@@ -44,7 +44,7 @@ export const useCheckout = (paymentPlatform, ingredients, ) => {
             body: JSON.stringify({
                 ingredients: Object.keys(ingredients),
                 price: getPrice(),
-                product: "prod_Pa2CTaagFh4Brw",
+                product: "prod_Pam65NYsZS4xfq",
                 checkoutType: paymentPlatform
             }),
         })
